@@ -150,9 +150,6 @@ begin
 end;
 ```
 
-## ✍️ License
-[![License](https://img.shields.io/badge/Licence-LGPL--3.0-blue.svg)](https://opensource.org/licenses/LGPL-3.0)
-
 ## ⛏️ Contribuição
 
 Nossa equipe adoraria receber contribuições para este projeto open source. Se você tiver alguma ideia ou correção de bug, sinta-se à vontade para abrir uma issue ou enviar uma pull request.
