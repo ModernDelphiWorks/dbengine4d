@@ -9,7 +9,7 @@ uses
 
   Uni,
   UniScript,
-
+  SQLiteUniProvider,
   dbebr.factory.interfaces;
 
 type
@@ -17,6 +17,7 @@ type
   TTestDriverConnection = class(TObject)
   strict private
     FConnection: TUniConnection;
+    FDBTransaction: TUniTransaction;
     FDBConnection: IDBConnection;
     FDBQuery: IDBQuery;
     FDBResultSet: IDBResultSet;
@@ -68,7 +69,7 @@ begin
   TestStartTransaction;
 
   FDBConnection.Commit;
-  Assert.IsFalse(FDBConnection.InTransaction, 'FConnection.InTransaction = false');
+  Assert.IsFalse(FDBConnection.InTransaction, 'FConnection.InTransaction = False');
 end;
 
 procedure TTestDriverConnection.TestExecuteDirect;
@@ -78,13 +79,21 @@ var
 begin
   LRandon := IntToStr( Random(9999) );
 
-  FDBConnection.ExecuteDirect( Format(cSQLUPDATE, [QuotedStr(cDESCRIPTION + LRandon), '1']) );
+  FDBConnection.UseTransaction('TESTE');
+  FDBConnection.StartTransaction;
+  try
+    FDBConnection.ExecuteDirect( Format(cSQLUPDATE, [QuotedStr(cDESCRIPTION + LRandon), '1']) );
 
-  FDBQuery := FDBConnection.CreateQuery;
-  FDBQuery.CommandText := Format(cSQLSELECT, ['1']);
-  LValue := FDBQuery.ExecuteQuery.FieldByName('CLIENT_NAME').AsString;
+    FDBQuery := FDBConnection.CreateQuery;
+    FDBQuery.CommandText := Format(cSQLSELECT, ['1']);
+    LValue := FDBQuery.ExecuteQuery.FieldByName('CLIENT_NAME').AsString;
 
-  Assert.AreEqual(LValue, cDESCRIPTION + LRandon, LValue + ' <> ' + cDESCRIPTION + LRandon);
+    FDBConnection.Commit;
+
+    Assert.AreEqual(LValue, cDESCRIPTION + LRandon, LValue + ' <> ' + cDESCRIPTION + LRandon);
+  except
+    FDBConnection.Rollback;
+  end;
 end;
 
 procedure TTestDriverConnection.TestExecuteDirectParams;
@@ -145,7 +154,7 @@ end;
 
 procedure TTestDriverConnection.TestIsConnected;
 begin
-  Assert.IsFalse(FDBConnection.IsConnected, 'FConnection.IsConnected = false');
+  Assert.IsFalse(FDBConnection.IsConnected, 'FConnection.IsConnected = False');
 end;
 
 procedure TTestDriverConnection.TestRollback;
@@ -153,7 +162,7 @@ begin
   TestStartTransaction;
 
   FDBConnection.Rollback;
-  Assert.IsFalse(FDBConnection.InTransaction, 'FConnection.InTransaction = false');
+  Assert.IsFalse(FDBConnection.InTransaction, 'FConnection.InTransaction = False');
 end;
 
 procedure TTestDriverConnection.Setup;
@@ -165,19 +174,27 @@ begin
   FConnection.ProviderName := 'SQLite';
   FConnection.Database := '.\database.db3';
 
+  // Transação para uso alternativo
+  FDBTransaction := TUniTransaction.Create(nil);
+  FDBTransaction.DefaultConnection := FConnection;
+  FDBTransaction.Name := 'TESTE';
+
   FDBConnection := TFactoryUniDAC.Create(FConnection, dnSQLite);
+  FDBConnection.AddTransaction('TESTE', FDBTransaction);
 end;
 
 procedure TTestDriverConnection.TestStartTransaction;
 begin
   FDBConnection.StartTransaction;
-  Assert.IsTrue(FDBConnection.InTransaction, 'FConnection.InTransaction = true');
+  Assert.IsTrue(FDBConnection.InTransaction, 'FConnection.InTransaction = True');
 end;
 
 procedure TTestDriverConnection.TearDown;
 begin
   if Assigned(FConnection) then
-    FreeAndNil(FConnection);
+    FConnection.Free;
+  if Assigned(FDBTransaction) then
+    FDBTransaction.Free;
 end;
 
 procedure TTestDriverConnection.TestAddScript;
@@ -188,24 +205,32 @@ end;
 procedure TTestDriverConnection.TestConnect;
 begin
   FDBConnection.Connect;
-  Assert.IsTrue(FDBConnection.IsConnected, 'FConnection.IsConnected = true');
+  Assert.IsTrue(FDBConnection.IsConnected, 'FConnection.IsConnected = True');
 end;
 
 procedure TTestDriverConnection.TestCreateQuery;
 var
   LValue: String;
   LRandon: String;
+  LRowsAffected: Integer;
 begin
   LRandon := IntToStr( Random(9999) );
 
+  // COMANDO - FDBQuery: IDBQuery;
   FDBQuery := FDBConnection.CreateQuery;
   FDBQuery.CommandText := Format(cSQLUPDATE, [QuotedStr(cDESCRIPTION + LRandon), '1']);
   FDBQuery.ExecuteDirect;
+  LRowsAffected := FDBQuery.RowsAffected;
 
-  FDBQuery.CommandText := Format(cSQLSELECT, ['1']);
-  LValue := FDBQuery.ExecuteQuery.FieldByName('CLIENT_NAME').AsString;
+  // SELECT - FDBResultSet: IDBResultSet;
+  FDBResultSet := FDBConnection.CreateResultSet;
+  FDBResultSet.CommandText := Format(cSQLSELECT, ['1']);
+  FDBResultSet.Open;
+
+  LValue := FDBResultSet.FieldByName('CLIENT_NAME').AsString;
 
   Assert.AreEqual(LValue, cDESCRIPTION + LRandon, LValue + ' <> ' + cDESCRIPTION + LRandon);
+  Assert.AreEqual(1, LRowsAffected, LRowsAffected.ToString + ' <> 1');
 end;
 
 procedure TTestDriverConnection.TestCreateResultSet;
@@ -218,7 +243,7 @@ end;
 procedure TTestDriverConnection.TestDisconnect;
 begin
   FDBConnection.Disconnect;
-  Assert.IsFalse(FDBConnection.IsConnected, 'FConnection.IsConnected = false');
+  Assert.IsFalse(FDBConnection.IsConnected, 'FConnection.IsConnected = False');
 end;
 
 initialization

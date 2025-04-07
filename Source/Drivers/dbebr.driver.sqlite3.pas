@@ -48,10 +48,10 @@ type
     destructor Destroy; override;
     procedure Connect; override;
     procedure Disconnect; override;
-    procedure ExecuteDirect(const ASQL: string); override;
-    procedure ExecuteDirect(const ASQL: string; const AParams: TParams); override;
-    procedure ExecuteScript(const AScript: string); override;
-    procedure AddScript(const AScript: string); override;
+    procedure ExecuteDirect(const ASQL: String); override;
+    procedure ExecuteDirect(const ASQL: String; const AParams: TParams); override;
+    procedure ExecuteScript(const AScript: String); override;
+    procedure AddScript(const AScript: String); override;
     procedure ExecuteScripts; override;
     function IsConnected: Boolean; override;
     function InTransaction: Boolean; override;
@@ -63,8 +63,8 @@ type
   private
     FSQLQuery: TSQLitePreparedStatement;
   protected
-    procedure SetCommandText(ACommandText: string); override;
-    function GetCommandText: string; override;
+    procedure SetCommandText(ACommandText: String); override;
+    function GetCommandText: String; override;
   public
     constructor Create(AConnection: TSQLiteDatabase);
     destructor Destroy; override;
@@ -78,7 +78,7 @@ type
   protected
     FConnection: TSQLiteDatabase;
     FDataSet: ISQLiteTable;
-    FRecordCount: Integer;
+    FRecordCount: UInt32;
     FFetchingAll: Boolean;
     FFirstNext: Boolean;
     FFieldDefs: TFieldDefs;
@@ -89,12 +89,12 @@ type
     destructor Destroy; override;
     procedure Close; override;
     function NotEof: Boolean; override;
-    function RecordCount: Integer; override;
+    function RecordCount: UInt32; override;
     function FieldDefs: TFieldDefs; override;
-    function GetFieldValue(const AFieldName: string): Variant; overload; override;
-    function GetFieldValue(const AFieldIndex: Integer): Variant; overload; override;
-    function GetFieldType(const AFieldName: string): TFieldType; override;
-    function GetField(const AFieldName: string): TField; override;
+    function GetFieldValue(const AFieldName: String): Variant; overload; override;
+    function GetFieldValue(const AFieldIndex: UInt16): Variant; overload; override;
+    function GetFieldType(const AFieldName: String): TFieldType; override;
+    function GetField(const AFieldName: String): TField; override;
   end;
 
 implementation
@@ -132,17 +132,17 @@ begin
   /// </summary>
 end;
 
-procedure TDriverSQLite3.ExecuteDirect(const ASQL: string);
+procedure TDriverSQLite3.ExecuteDirect(const ASQL: String);
 begin
   inherited;
   FConnection.ExecSQL(ASQL);
 end;
 
-procedure TDriverSQLite3.ExecuteDirect(const ASQL: string; const AParams: TParams);
+procedure TDriverSQLite3.ExecuteDirect(const ASQL: String; const AParams: TParams);
 var
   LExeSQL: ISQLitePreparedStatement;
-  LAffectedRows: Integer;
-  LFor: Integer;
+  LAffectedRows: UInt32;
+  LFor: UInt16;
 begin
   LExeSQL := TSQLitePreparedStatement.Create(FConnection);
   /// <summary>
@@ -160,7 +160,7 @@ begin
   end;
 end;
 
-procedure TDriverSQLite3.ExecuteScript(const AScript: string);
+procedure TDriverSQLite3.ExecuteScript(const AScript: String);
 begin
   inherited;
   FConnection.ExecSQL(AScript);
@@ -168,7 +168,7 @@ end;
 
 procedure TDriverSQLite3.ExecuteScripts;
 var
-  LFor: Integer;
+  LFor: UInt32;
 begin
   inherited;
   try
@@ -179,7 +179,7 @@ begin
   end;
 end;
 
-procedure TDriverSQLite3.AddScript(const AScript: string);
+procedure TDriverSQLite3.AddScript(const AScript: String);
 begin
   inherited;
   FScripts.Add(AScript);
@@ -249,12 +249,12 @@ begin
   end;
 end;
 
-function TDriverQuerySQLite3.GetCommandText: string;
+function TDriverQuerySQLite3.GetCommandText: String;
 begin
   Result := FSQLQuery.SQL;
 end;
 
-procedure TDriverQuerySQLite3.SetCommandText(ACommandText: string);
+procedure TDriverQuerySQLite3.SetCommandText(ACommandText: String);
 begin
   inherited;
   FSQLQuery.SQL := ACommandText;
@@ -276,7 +276,7 @@ constructor TDriverResultSetSQLite3.Create(const AConnection: TSQLiteDatabase;
   const ADataSet: ISQLiteTable);
 var
   LField: TField;
-  LFor: Integer;
+  LFor: UInt16;
 begin
   FConnection := AConnection;
   FDataSet := ADataSet;
@@ -320,13 +320,13 @@ begin
   Result := FFieldDefs;
 end;
 
-function TDriverResultSetSQLite3.GetFieldValue(const AFieldName: string): Variant;
+function TDriverResultSetSQLite3.GetFieldValue(const AFieldName: String): Variant;
 begin
   inherited;
   Result := FDataSet.FieldByName[AFieldName].Value;
 end;
 
-function TDriverResultSetSQLite3.GetField(const AFieldName: string): TField;
+function TDriverResultSetSQLite3.GetField(const AFieldName: String): TField;
 begin
   inherited;
   FDataSetInternal.Edit;
@@ -335,13 +335,13 @@ begin
   Result := FDataSetInternal.FieldByName(AFieldName);
 end;
 
-function TDriverResultSetSQLite3.GetFieldType(const AFieldName: string): TFieldType;
+function TDriverResultSetSQLite3.GetFieldType(const AFieldName: String): TFieldType;
 begin
   inherited;
   Result := TFieldType(FDataSet.FindField(AFieldName).FieldType);
 end;
 
-function TDriverResultSetSQLite3.GetFieldValue(const AFieldIndex: Integer): Variant;
+function TDriverResultSetSQLite3.GetFieldValue(const AFieldIndex: UInt16): Variant;
 begin
   inherited;
   if Cardinal(AFieldIndex) > FDataSet.FieldCount -1 then
@@ -363,7 +363,7 @@ begin
   Result := not FDataSet.Eof;
 end;
 
-function TDriverResultSetSQLite3.RecordCount: Integer;
+function TDriverResultSetSQLite3.RecordCount: UInt32;
 begin
   inherited;
   Result := FDataSet.Row;
@@ -371,7 +371,7 @@ end;
 
 procedure TDriverResultSetSQLite3.CreateFieldDefs;
 var
-  LFor: Integer;
+  LFor: UInt16;
 begin
   FFieldDefs.Clear;
   for LFor := 0 to FDataSet.FieldCount -1 do

@@ -17,7 +17,8 @@
        arquivo LICENSE na pasta principal.
 }
 
-{ @abstract(DBEBr Framework)
+{
+  @abstract(DBEBr Framework)
   @created(20 Jul 2016)
   @author(Isaque Pinheiro <https://www.isaquepinheiro.com.br>)
 }
@@ -29,6 +30,9 @@ interface
 uses
   DB,
   Classes,
+  SysUtils,
+  SqlExpr,
+  // DBEBr
   dbebr.factory.connection,
   dbebr.factory.interfaces;
 
@@ -36,30 +40,16 @@ type
   // Fábrica de conexão concreta com dbExpress
   TFactoryDBExpress = class(TFactoryConnection)
   public
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TSQLConnection;
       const ADriverName: TDriverName); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TSQLConnection;
       const ADriverName: TDriverName;
       const AMonitor: ICommandMonitor); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TSQLConnection;
       const ADriverName: TDriverName;
       const AMonitorCallback: TMonitorProc); overload;
     destructor Destroy; override;
-    procedure Connect; override;
-    procedure Disconnect; override;
-    procedure StartTransaction; override;
-    procedure Commit; override;
-    procedure Rollback; override;
-    procedure ExecuteDirect(const ASQL: string); override;
-    procedure ExecuteDirect(const ASQL: string; const AParams: TParams); override;
-    procedure ExecuteScript(const AScript: string); override;
-    procedure AddScript(const AScript: string); override;
-    procedure ExecuteScripts; override;
-    function InTransaction: Boolean; override;
-    function IsConnected: Boolean; override;
-    function GetDriverName: TDriverName; override;
-    function CreateQuery: IDBQuery; override;
-    function CreateResultSet(const ASQL: String): IDBResultSet; override;
+    procedure AddTransaction(const AKey: String; const ATransaction: TComponent); override;
   end;
 
 implementation
@@ -70,116 +60,45 @@ uses
 
 { TFactoryDBExpress }
 
-procedure TFactoryDBExpress.Connect;
-begin
-  if not IsConnected then
-    FDriverConnection.Connect;
-end;
-
-constructor TFactoryDBExpress.Create(const AConnection: TComponent;
+constructor TFactoryDBExpress.Create(const AConnection: TSQLConnection;
   const ADriverName: TDriverName);
 begin
-  FDriverConnection  := TDriverDBExpress.Create(AConnection, ADriverName);
   FDriverTransaction := TDriverDBExpressTransaction.Create(AConnection);
+  FDriverConnection  := TDriverDBExpress.Create(AConnection,
+                                                FDriverTransaction,
+                                                ADriverName,
+                                                FCommandMonitor,
+                                                FMonitorCallback);
   FAutoTransaction := False;
 end;
 
-constructor TFactoryDBExpress.Create(const AConnection: TComponent;
+constructor TFactoryDBExpress.Create(const AConnection: TSQLConnection;
   const ADriverName: TDriverName; const AMonitor: ICommandMonitor);
 begin
-  Create(AConnection, ADriverName);
   FCommandMonitor := AMonitor;
+  Create(AConnection, ADriverName);
 end;
 
-constructor TFactoryDBExpress.Create(const AConnection: TComponent;
+procedure TFactoryDBExpress.AddTransaction(const AKey: String;
+  const ATransaction: TComponent);
+begin
+//  if not (ATransaction is TDBXTransaction) then
+//    raise Exception.Create('Invalid transaction type. Expected TDBXTransaction.');
+
+//  inherited AddTransaction(AKey, ATransaction);
+end;
+
+constructor TFactoryDBExpress.Create(const AConnection: TSQLConnection;
   const ADriverName: TDriverName; const AMonitorCallback: TMonitorProc);
 begin
-  Create(AConnection, ADrivername);
   FMonitorCallback := AMonitorCallback;
-end;
-
-function TFactoryDBExpress.CreateQuery: IDBQuery;
-begin
-  Result := FDriverConnection.CreateQuery;
-end;
-
-function TFactoryDBExpress.CreateResultSet(const ASQL: String): IDBResultSet;
-begin
-  Result := FDriverConnection.CreateResultSet(ASQL);
+  Create(AConnection, ADriverName);
 end;
 
 destructor TFactoryDBExpress.Destroy;
 begin
-  FDriverTransaction.Free;
   FDriverConnection.Free;
-  inherited;
-end;
-
-procedure TFactoryDBExpress.Disconnect;
-begin
-  inherited;
-  if IsConnected then
-    FDriverConnection.Disconnect;
-end;
-
-procedure TFactoryDBExpress.ExecuteDirect(const ASQL: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryDBExpress.ExecuteDirect(const ASQL: string; const AParams: TParams);
-begin
-  inherited;
-end;
-
-procedure TFactoryDBExpress.ExecuteScript(const AScript: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryDBExpress.ExecuteScripts;
-begin
-  inherited;
-end;
-
-function TFactoryDBExpress.GetDriverName: TDriverName;
-begin
-  inherited;
-  Result := FDriverConnection.DriverName;
-end;
-
-function TFactoryDBExpress.IsConnected: Boolean;
-begin
-  inherited;
-  Result := FDriverConnection.IsConnected;
-end;
-
-function TFactoryDBExpress.InTransaction: Boolean;
-begin
-  Result := FDriverTransaction.InTransaction;
-end;
-
-procedure TFactoryDBExpress.StartTransaction;
-begin
-  inherited;
-  FDriverTransaction.StartTransaction;
-end;
-
-procedure TFactoryDBExpress.AddScript(const AScript: string);
-begin
-  inherited;
-  FDriverConnection.AddScript(AScript);
-end;
-
-procedure TFactoryDBExpress.Commit;
-begin
-  FDriverTransaction.Commit;
-  inherited;
-end;
-
-procedure TFactoryDBExpress.Rollback;
-begin
-  FDriverTransaction.Rollback;
+  FDriverTransaction.Free;
   inherited;
 end;
 

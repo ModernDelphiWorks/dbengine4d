@@ -48,11 +48,11 @@ type
     destructor Destroy; override;
     procedure Connect; override;
     procedure Disconnect; override;
-    procedure ExecuteDirect(const ASQL: string); overload; override;
-    procedure ExecuteDirect(const ASQL: string;
+    procedure ExecuteDirect(const ASQL: String); overload; override;
+    procedure ExecuteDirect(const ASQL: String;
       const AParams: TParams); overload; override;
-    procedure ExecuteScript(const AScript: string); override;
-    procedure AddScript(const AScript: string); override;
+    procedure ExecuteScript(const AScript: String); override;
+    procedure AddScript(const AScript: String); override;
     procedure ExecuteScripts; override;
     function IsConnected: Boolean; override;
     function InTransaction: Boolean; override;
@@ -64,8 +64,8 @@ type
   private
     FSQLQuery: TADOQuery;
   protected
-    procedure SetCommandText(ACommandText: string); override;
-    function GetCommandText: string; override;
+    procedure SetCommandText(ACommandText: String); override;
+    function GetCommandText: String; override;
   public
     constructor Create(AConnection: TADOConnection);
     destructor Destroy; override;
@@ -78,10 +78,10 @@ type
     constructor Create(ADataSet: TADOQuery); override;
     destructor Destroy; override;
     function NotEof: Boolean; override;
-    function GetFieldValue(const AFieldName: string): Variant; overload; override;
-    function GetFieldValue(const AFieldIndex: Integer): Variant; overload; override;
-    function GetFieldType(const AFieldName: string): TFieldType; overload; override;
-    function GetField(const AFieldName: string): TField; override;
+    function GetFieldValue(const AFieldName: String): Variant; overload; override;
+    function GetFieldValue(const AFieldIndex: UInt16): Variant; overload; override;
+    function GetFieldType(const AFieldName: String): TFieldType; overload; override;
+    function GetField(const AFieldName: String): TField; override;
   end;
 
 implementation
@@ -116,16 +116,16 @@ begin
   FConnection.Connected := False;
 end;
 
-procedure TDriverADO.ExecuteDirect(const ASQL: string);
+procedure TDriverADO.ExecuteDirect(const ASQL: String);
 begin
   inherited;
   FConnection.Execute(ASQL);
 end;
 
-procedure TDriverADO.ExecuteDirect(const ASQL: string; const AParams: TParams);
+procedure TDriverADO.ExecuteDirect(const ASQL: String; const AParams: TParams);
 var
   LExeSQL: TADOQuery;
-  LFor: Integer;
+  LFor: Int16;
 begin
   LExeSQL := TADOQuery.Create(nil);
   try
@@ -146,7 +146,7 @@ begin
   end;
 end;
 
-procedure TDriverADO.ExecuteScript(const AScript: string);
+procedure TDriverADO.ExecuteScript(const AScript: String);
 begin
   inherited;
   FSQLScript.SQL.Text := AScript;
@@ -163,7 +163,7 @@ begin
   end;
 end;
 
-procedure TDriverADO.AddScript(const AScript: string);
+procedure TDriverADO.AddScript(const AScript: String);
 begin
   inherited;
   FSQLScript.SQL.Add(AScript);
@@ -225,7 +225,7 @@ end;
 function TDriverQueryADO.ExecuteQuery: IDBResultSet;
 var
   LResultSet: TADOQuery;
-  LFor: Integer;
+  LFor: Int16;
 begin
   LResultSet := TADOQuery.Create(nil);
   try
@@ -247,12 +247,12 @@ begin
      Result.FetchingAll := True;
 end;
 
-function TDriverQueryADO.GetCommandText: string;
+function TDriverQueryADO.GetCommandText: String;
 begin
   Result := FSQLQuery.SQL.Text;
 end;
 
-procedure TDriverQueryADO.SetCommandText(ACommandText: string);
+procedure TDriverQueryADO.SetCommandText(ACommandText: String);
 begin
   inherited;
   FSQLQuery.SQL.Text := ACommandText;
@@ -277,7 +277,7 @@ begin
   inherited;
 end;
 
-function TDriverResultSetADO.GetFieldValue(const AFieldName: string): Variant;
+function TDriverResultSetADO.GetFieldValue(const AFieldName: String): Variant;
 var
   LField: TField;
 begin
@@ -285,17 +285,17 @@ begin
   Result := GetFieldValue(LField.Index);
 end;
 
-function TDriverResultSetADO.GetField(const AFieldName: string): TField;
+function TDriverResultSetADO.GetField(const AFieldName: String): TField;
 begin
   Result := FDataSet.FieldByName(AFieldName);
 end;
 
-function TDriverResultSetADO.GetFieldType(const AFieldName: string): TFieldType;
+function TDriverResultSetADO.GetFieldType(const AFieldName: String): TFieldType;
 begin
   Result := FDataSet.FieldByName(AFieldName).DataType;
 end;
 
-function TDriverResultSetADO.GetFieldValue(const AFieldIndex: Integer): Variant;
+function TDriverResultSetADO.GetFieldValue(const AFieldIndex: UInt16): Variant;
 begin
   if AFieldIndex > FDataSet.FieldCount -1  then
     Exit(Variants.Null);

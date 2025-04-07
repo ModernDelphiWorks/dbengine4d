@@ -27,8 +27,10 @@ unit dbebr.driver.zeos.transaction;
 interface
 
 uses
-  Classes,
   DB,
+  Classes,
+  SysUtils,
+  Generics.Collections,
   ZAbstractConnection,
   ZConnection,
   // DBEBr
@@ -36,12 +38,14 @@ uses
   dbebr.factory.interfaces;
 
 type
-  // Classe de conexão concreta com dbExpress
   TDriverZeosTransaction = class(TDriverTransaction)
-  protected
+  private
     FConnection: TZConnection;
+    {$IFDEF ZEOS80UP}
+    FTransaction: TZTransaction;
+	{$ENDIF}
   public
-    constructor Create(AConnection: TComponent); override;
+    constructor Create(const AConnection: TComponent); override;
     destructor Destroy; override;
     procedure StartTransaction; override;
     procedure Commit; override;
@@ -53,37 +57,75 @@ implementation
 
 { TDriverZeosTransaction }
 
-constructor TDriverZeosTransaction.Create(AConnection: TComponent);
+constructor TDriverZeosTransaction.Create(const AConnection: TComponent);
 begin
+  FTransactionList := TDictionary<String, TComponent>.Create;
   FConnection := AConnection as TZConnection;
+  {$IFDEF ZEOS80UP}
+  if FConnection.Transaction = nil then
+  begin
+    FTransaction := TFDTransaction.Create(nil);
+    FTransaction.Connection := FConnection;
+    FConnection.Transaction := FTransaction;
+  end;
+  FConnection.Transaction.Name := 'DEFAULT';
+  FTransactionList.Add('DEFAULT', FConnection.Transaction);
+  FTransactionActive := FConnection.Transaction;
+  {$ENDIF}
 end;
 
 destructor TDriverZeosTransaction.Destroy;
 begin
-  FConnection := nil;
+  {$IFDEF ZEOS80UP}
+  if Assigned(FTransaction) then
+  begin
+    FConnection.Transaction := nil;
+    FTransaction.Connection := nil;
+    FTransaction.Free;
+  end;
+  {$ENDIF}
+  FTransactionActive := nil;
+  FTransactionList.Clear;
+  FTransactionList.Free;
   inherited;
-end;
-
-function TDriverZeosTransaction.InTransaction: Boolean;
-begin
-  Result := False;
-  if FConnection.Connected then
-    Result := FConnection.InTransaction;
 end;
 
 procedure TDriverZeosTransaction.StartTransaction;
 begin
+  {$IFDEF ZEOS80UP}
+  (FTransactionActive as TZTransaction).StartTransaction;
+  {$ELSE}
   FConnection.StartTransaction;
+  {$ENDIF}
 end;
 
 procedure TDriverZeosTransaction.Commit;
 begin
+  {$IFDEF ZEOS80UP}
+  (FTransactionActive as TZTransaction).Commit;
+  {$ELSE}
   FConnection.Commit;
+  {$ENDIF}
 end;
 
 procedure TDriverZeosTransaction.Rollback;
 begin
+  {$IFDEF ZEOS80UP}
+  (FTransactionActive as TZTransaction).Rollback;
+  {$ELSE}
   FConnection.Rollback;
+  {$ENDIF}
+end;
+
+function TDriverZeosTransaction.InTransaction: Boolean;
+begin
+  {$IFDEF ZEOS80UP}
+  if not Assigned(FTransactionActive) then
+    raise Exception.Create('The active transaction is not defined. Please make sure to start a transaction before checking if it is in progress.');
+  Result := (FTransactionActive as TZTransaction).InTransaction;
+  {$ELSE}
+  Result := FConnection.InTransaction;
+  {$ENDIF}
 end;
 
 end.

@@ -30,34 +30,25 @@ uses
   DB,
   Classes,
   SysUtils,
+  FireDAC.Comp.Client,
+  // DBEBr
   dbebr.factory.connection,
   dbebr.factory.interfaces;
 
 type
-  // Fábrica de conexão concreta com dbExpress
+  // Fábrica de conexão concreta com MongoFireDAC
   TFactoryMongoFireDAC = class(TFactoryConnection)
   public
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TFDConnection;
       const  ADriverName: TDriverName); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TFDConnection;
+      const ADriverName: TDriverName;
+      const AMonitor: ICommandMonitor); overload;
+    constructor Create(const AConnection: TFDConnection;
       const ADriverName: TDriverName;
       const AMonitorCallback: TMonitorProc); overload;
     destructor Destroy; override;
-    procedure Connect; override;
-    procedure Disconnect; override;
-    procedure StartTransaction; override;
-    procedure Commit; override;
-    procedure Rollback; override;
-    procedure ExecuteDirect(const ASQL: string); overload; override;
-    procedure ExecuteDirect(const ASQL: string; const AParams: TParams); overload; override;
-    procedure ExecuteScript(const AScript: string); override;
-    procedure AddScript(const AScript: string); override;
-    procedure ExecuteScripts; override;
-    function InTransaction: Boolean; override;
-    function IsConnected: Boolean; override;
-    function GetDriverName: TDriverName; override;
-    function CreateQuery: IDBQuery; override;
-    function CreateResultSet(const ASQL: String): IDBResultSet; override;
+    procedure AddTransaction(const AKey: String; const ATransaction: TComponent); override;
   end;
 
 implementation
@@ -68,108 +59,45 @@ uses
 
 { TFactoryMongoFireDAC }
 
-procedure TFactoryMongoFireDAC.Connect;
-begin
-  if not IsConnected then
-    FDriverConnection.Connect;
-end;
-
-constructor TFactoryMongoFireDAC.Create(const AConnection: TComponent;
+constructor TFactoryMongoFireDAC.Create(const AConnection: TFDConnection;
   const  ADriverName: TDriverName);
 begin
-  FDriverConnection  := TDriverMongoFireDAC.Create(AConnection, ADriverName);
   FDriverTransaction := TDriverMongoFireDACTransaction.Create(AConnection);
+  FDriverConnection  := TDriverMongoFireDAC.Create(AConnection,
+                                                   FDriverTransaction,
+                                                   ADriverName,
+                                                   FCommandMonitor,
+                                                   FMonitorCallback);
+  FAutoTransaction := False;
 end;
 
-constructor TFactoryMongoFireDAC.Create(const AConnection: TComponent;
+constructor TFactoryMongoFireDAC.Create(const AConnection: TFDConnection;
+  const ADriverName: TDriverName; const AMonitor: ICommandMonitor);
+begin
+  Create(AConnection, ADriverName);
+  FCommandMonitor := AMonitor;
+end;
+
+procedure TFactoryMongoFireDAC.AddTransaction(const AKey: String;
+  const ATransaction: TComponent);
+begin
+  if not (ATransaction is TFDConnection) then
+    raise Exception.Create('Invalid transaction type. Expected TFDConnection.');
+
+  inherited AddTransaction(AKey, ATransaction);
+end;
+
+constructor TFactoryMongoFireDAC.Create(const AConnection: TFDConnection;
   const ADriverName: TDriverName; const AMonitorCallback: TMonitorProc);
 begin
   Create(AConnection, ADriverName);
   FMonitorCallback := AMonitorCallback;
 end;
 
-function TFactoryMongoFireDAC.CreateQuery: IDBQuery;
-begin
-  Result := FDriverConnection.CreateQuery;
-end;
-
-function TFactoryMongoFireDAC.CreateResultSet(const ASQL: String): IDBResultSet;
-begin
-  Result := FDriverConnection.CreateResultSet(ASQL);
-end;
-
 destructor TFactoryMongoFireDAC.Destroy;
 begin
-  FDriverTransaction.Free;
   FDriverConnection.Free;
-  inherited;
-end;
-
-procedure TFactoryMongoFireDAC.Disconnect;
-begin
-  inherited;
-  if IsConnected then
-    FDriverConnection.Disconnect;
-end;
-
-procedure TFactoryMongoFireDAC.ExecuteDirect(const ASQL: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryMongoFireDAC.ExecuteDirect(const ASQL: string; const AParams: TParams);
-begin
-  inherited;
-end;
-
-procedure TFactoryMongoFireDAC.ExecuteScript(const AScript: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryMongoFireDAC.ExecuteScripts;
-begin
-  inherited;
-end;
-
-function TFactoryMongoFireDAC.GetDriverName: TDriverName;
-begin
-  inherited;
-  Result := FDriverConnection.DriverName;
-end;
-
-function TFactoryMongoFireDAC.IsConnected: Boolean;
-begin
-  inherited;
-  Result := FDriverConnection.IsConnected;
-end;
-
-function TFactoryMongoFireDAC.InTransaction: Boolean;
-begin
-  Result := FDriverTransaction.InTransaction;
-end;
-
-procedure TFactoryMongoFireDAC.StartTransaction;
-begin
-  inherited;
-  FDriverTransaction.StartTransaction;
-end;
-
-procedure TFactoryMongoFireDAC.AddScript(const AScript: string);
-begin
-  inherited;
-  FDriverConnection.AddScript(AScript);
-end;
-
-procedure TFactoryMongoFireDAC.Commit;
-begin
-  FDriverTransaction.Commit;
-  inherited;
-end;
-
-procedure TFactoryMongoFireDAC.Rollback;
-begin
-  FDriverTransaction.Rollback;
+  FDriverTransaction.Free;
   inherited;
 end;
 

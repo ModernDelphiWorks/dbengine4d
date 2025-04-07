@@ -30,6 +30,8 @@ uses
   DB,
   Classes,
   SysUtils,
+  FireDAC.Comp.Client,
+  // DBEBr
   dbebr.factory.connection,
   dbebr.factory.interfaces;
 
@@ -37,31 +39,16 @@ type
   // Fábrica de conexão concreta com FireDAC
   TFactoryFireDAC = class(TFactoryConnection)
   public
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TFDConnection;
       const ADriverName: TDriverName); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TFDConnection;
       const ADriverName: TDriverName;
       const AMonitor: ICommandMonitor); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TFDConnection;
       const ADriverName: TDriverName;
       const AMonitorCallback: TMonitorProc); overload;
     destructor Destroy; override;
-    procedure Connect; override;
-    procedure Disconnect; override;
-    procedure StartTransaction; override;
-    procedure Commit; override;
-    procedure Rollback; override;
-    procedure ExecuteDirect(const ASQL: string); overload; override;
-    procedure ExecuteDirect(const ASQL: string;
-      const AParams: TParams); overload; override;
-    procedure ExecuteScript(const AScript: string); override;
-    procedure AddScript(const AScript: string); override;
-    procedure ExecuteScripts; override;
-    function InTransaction: Boolean; override;
-    function IsConnected: Boolean; override;
-    function GetDriverName: TDriverName; override;
-    function CreateQuery: IDBQuery; override;
-    function CreateResultSet(const ASQL: String): IDBResultSet; override;
+    procedure AddTransaction(const AKey: String; const ATransaction: TComponent); override;
   end;
 
 implementation
@@ -72,118 +59,45 @@ uses
 
 { TFactoryFireDAC }
 
-procedure TFactoryFireDAC.Connect;
-begin
-  if not IsConnected then
-    FDriverConnection.Connect;
-end;
-
-constructor TFactoryFireDAC.Create(const AConnection: TComponent;
+constructor TFactoryFireDAC.Create(const AConnection: TFDConnection;
   const ADriverName: TDriverName);
 begin
-  FDriverConnection  := TDriverFireDAC.Create(AConnection, ADriverName);
   FDriverTransaction := TDriverFireDACTransaction.Create(AConnection);
+  FDriverConnection  := TDriverFireDAC.Create(AConnection,
+                                              FDriverTransaction,
+                                              ADriverName,
+                                              FCommandMonitor,
+                                              FMonitorCallback);
   FAutoTransaction := False;
 end;
 
-constructor TFactoryFireDAC.Create(const AConnection: TComponent;
-  const ADriverName: TDriverName;
-  const AMonitor: ICommandMonitor);
+constructor TFactoryFireDAC.Create(const AConnection: TFDConnection;
+  const ADriverName: TDriverName; const AMonitor: ICommandMonitor);
 begin
-  Create(AConnection, ADriverName);
   FCommandMonitor := AMonitor;
+  Create(AConnection, ADriverName);
 end;
 
-constructor TFactoryFireDAC.Create(const AConnection: TComponent;
+procedure TFactoryFireDAC.AddTransaction(const AKey: String;
+  const ATransaction: TComponent);
+begin
+  if not (ATransaction is TFDTransaction) then
+    raise Exception.Create('Invalid transaction type. Expected TFDTransaction.');
+
+  inherited AddTransaction(AKey, ATransaction);
+end;
+
+constructor TFactoryFireDAC.Create(const AConnection: TFDConnection;
   const ADriverName: TDriverName; const AMonitorCallback: TMonitorProc);
 begin
-  Create(AConnection, ADriverName);
   FMonitorCallback := AMonitorCallback;
-end;
-
-function TFactoryFireDAC.CreateQuery: IDBQuery;
-begin
-  Result := FDriverConnection.CreateQuery;
-end;
-
-function TFactoryFireDAC.CreateResultSet(const ASQL: String): IDBResultSet;
-begin
-  Result := FDriverConnection.CreateResultSet(ASQL);
+  Create(AConnection, ADriverName);
 end;
 
 destructor TFactoryFireDAC.Destroy;
 begin
-  FDriverTransaction.Free;
   FDriverConnection.Free;
-  inherited;
-end;
-
-procedure TFactoryFireDAC.Disconnect;
-begin
-  inherited;
-  if IsConnected then
-    FDriverConnection.Disconnect;
-end;
-
-procedure TFactoryFireDAC.ExecuteDirect(const ASQL: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryFireDAC.ExecuteDirect(const ASQL: string;
-  const AParams: TParams);
-begin
-  inherited;
-end;
-
-procedure TFactoryFireDAC.ExecuteScript(const AScript: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryFireDAC.ExecuteScripts;
-begin
-  inherited;
-end;
-
-function TFactoryFireDAC.GetDriverName: TDriverName;
-begin
-  inherited;
-  Result := FDriverConnection.DriverName;
-end;
-
-function TFactoryFireDAC.IsConnected: Boolean;
-begin
-  inherited;
-  Result := FDriverConnection.IsConnected;
-end;
-
-function TFactoryFireDAC.InTransaction: Boolean;
-begin
-  Result := FDriverTransaction.InTransaction;
-end;
-
-procedure TFactoryFireDAC.StartTransaction;
-begin
-  inherited;
-  FDriverTransaction.StartTransaction;
-end;
-
-procedure TFactoryFireDAC.AddScript(const AScript: string);
-begin
-  inherited;
-  FDriverConnection.AddScript(AScript);
-end;
-
-procedure TFactoryFireDAC.Commit;
-begin
-  FDriverTransaction.Commit;
-  inherited;
-end;
-
-procedure TFactoryFireDAC.Rollback;
-begin
-  FDriverTransaction.Rollback;
+  FDriverTransaction.Free;
   inherited;
 end;
 

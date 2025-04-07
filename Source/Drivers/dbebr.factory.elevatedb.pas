@@ -30,6 +30,8 @@ uses
   DB,
   Classes,
   SysUtils,
+  edbcomps,
+  // DBEBr
   dbebr.factory.connection,
   dbebr.factory.interfaces;
 
@@ -37,28 +39,16 @@ type
   // Fábrica de conexão concreta com ElevateDB
   TFactoryElevateDB = class(TFactoryConnection)
   public
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TEDBDatabase;
       const ADriverName: TDriverName); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TEDBDatabase;
+      const ADriverName: TDriverName;
+      const AMonitor: ICommandMonitor); overload;
+    constructor Create(const AConnection: TEDBDatabase;
       const ADriverName: TDriverName;
       const AMonitorCallback: TMonitorProc); overload;
     destructor Destroy; override;
-    procedure Connect; override;
-    procedure Disconnect; override;
-    procedure StartTransaction; override;
-    procedure Commit; override;
-    procedure Rollback; override;
-    procedure ExecuteDirect(const ASQL: string); overload; override;
-    procedure ExecuteDirect(const ASQL: string;
-      const AParams: TParams); overload; override;
-    procedure ExecuteScript(const AScript: string); override;
-    procedure AddScript(const AScript: string); override;
-    procedure ExecuteScripts; override;
-    function InTransaction: Boolean; override;
-    function IsConnected: Boolean; override;
-    function GetDriverName: TDriverName; override;
-    function CreateQuery: IDBQuery; override;
-    function CreateResultSet(const ASQL: String): IDBResultSet; override;
+    procedure AddTransaction(const AKey: String; const ATransaction: TComponent); override;
   end;
 
 implementation
@@ -69,109 +59,45 @@ uses
 
 { TFactoryElevateDB }
 
-procedure TFactoryElevateDB.Connect;
-begin
-  if not IsConnected then
-    FDriverConnection.Connect;
-end;
-
-constructor TFactoryElevateDB.Create(const AConnection: TComponent;
+constructor TFactoryElevateDB.Create(const AConnection: TEDBDatabase;
   const ADriverName: TDriverName);
 begin
-  inherited;
-  FDriverConnection  := TDriverElevateDB.Create(AConnection, ADriverName);
   FDriverTransaction := TDriverElevateDBTransaction.Create(AConnection);
+  FDriverConnection  := TDriverElevateDB.Create(AConnection,
+                                                FDriverTransaction,
+                                                ADriverName,
+                                                FCommandMonitor,
+                                                FMonitorCallback);
+  FAutoTransaction := False;
 end;
 
-constructor TFactoryElevateDB.Create(const AConnection: TComponent;
+constructor TFactoryElevateDB.Create(const AConnection: TEDBDatabase;
+  const ADriverName: TDriverName; const AMonitor: ICommandMonitor);
+begin
+  Create(AConnection, ADriverName);
+  FCommandMonitor := AMonitor;
+end;
+
+procedure TFactoryElevateDB.AddTransaction(const AKey: String;
+  const ATransaction: TComponent);
+begin
+  if not (ATransaction is TEDBDatabase) then
+    raise Exception.Create('Invalid transaction type. Expected TEDBDatabase.');
+
+  inherited AddTransaction(AKey, ATransaction);
+end;
+
+constructor TFactoryElevateDB.Create(const AConnection: TEDBDatabase;
   const ADriverName: TDriverName; const AMonitorCallback: TMonitorProc);
 begin
   Create(AConnection, ADriverName);
   FMonitorCallback := AMonitorCallback;
 end;
 
-function TFactoryElevateDB.CreateQuery: IDBQuery;
-begin
-  Result := FDriverConnection.CreateQuery;
-end;
-
-function TFactoryElevateDB.CreateResultSet(const ASQL: String): IDBResultSet;
-begin
-  Result := FDriverConnection.CreateResultSet(ASQL);
-end;
-
 destructor TFactoryElevateDB.Destroy;
 begin
-  FDriverTransaction.Free;
   FDriverConnection.Free;
-  inherited;
-end;
-
-procedure TFactoryElevateDB.Disconnect;
-begin
-  inherited;
-  if IsConnected then
-    FDriverConnection.Disconnect;
-end;
-
-procedure TFactoryElevateDB.ExecuteDirect(const ASQL: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryElevateDB.ExecuteDirect(const ASQL: string; const AParams: TParams);
-begin
-  inherited;
-end;
-
-procedure TFactoryElevateDB.ExecuteScript(const AScript: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryElevateDB.ExecuteScripts;
-begin
-  inherited;
-end;
-
-function TFactoryElevateDB.GetDriverName: TDriverName;
-begin
-  inherited;
-  Result := FDriverConnection.DriverName;
-end;
-
-function TFactoryElevateDB.IsConnected: Boolean;
-begin
-  inherited;
-  Result := FDriverConnection.IsConnected;
-end;
-
-function TFactoryElevateDB.InTransaction: Boolean;
-begin
-  Result := FDriverTransaction.InTransaction;
-end;
-
-procedure TFactoryElevateDB.StartTransaction;
-begin
-  inherited;
-  FDriverTransaction.StartTransaction;
-end;
-
-procedure TFactoryElevateDB.AddScript(const AScript: string);
-begin
-  inherited;
-  FDriverConnection.AddScript(AScript);
-end;
-
-procedure TFactoryElevateDB.Commit;
-begin
-  FDriverTransaction.Commit;
-  inherited;
-end;
-
-procedure TFactoryElevateDB.Rollback;
-begin
-  FDriverTransaction.Rollback;
+  FDriverTransaction.Free;
   inherited;
 end;
 

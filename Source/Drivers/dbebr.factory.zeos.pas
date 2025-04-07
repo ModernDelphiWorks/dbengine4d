@@ -29,6 +29,9 @@ interface
 uses
   DB,
   Classes,
+  SysUtils,
+  ZConnection,
+  // DBEBr
   dbebr.factory.connection,
   dbebr.factory.interfaces;
 
@@ -36,30 +39,16 @@ type
   // Fábrica de conexão concreta com dbExpress
   TFactoryZeos = class(TFactoryConnection)
   public
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TZConnection;
       const ADriverName: TDriverName); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TZConnection;
       const ADriverName: TDriverName;
       const AMonitor: ICommandMonitor); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TZConnection;
       const ADriverName: TDriverName;
       const AMonitorCallback: TMonitorProc); overload;
     destructor Destroy; override;
-    procedure Connect; override;
-    procedure Disconnect; override;
-    procedure StartTransaction; override;
-    procedure Commit; override;
-    procedure Rollback; override;
-    procedure ExecuteDirect(const ASQL: string); override;
-    procedure ExecuteDirect(const ASQL: string; const AParams: TParams); override;
-    procedure ExecuteScript(const AScript: string); override;
-    procedure AddScript(const AScript: string); override;
-    procedure ExecuteScripts; override;
-    function InTransaction: Boolean; override;
-    function IsConnected: Boolean; override;
-    function GetDriverName: TDriverName; override;
-    function CreateQuery: IDBQuery; override;
-    function CreateResultSet(const ASQL: String): IDBResultSet; override;
+    procedure AddTransaction(const AKey: String; const ATransaction: TComponent); override;
   end;
 
 implementation
@@ -70,112 +59,45 @@ uses
 
 { TFactoryZeos }
 
-procedure TFactoryZeos.Connect;
-begin
-  if not IsConnected then
-    FDriverConnection.Connect;
-end;
-
-constructor TFactoryZeos.Create(const AConnection: TComponent;
+constructor TFactoryZeos.Create(const AConnection: TZConnection;
   const ADriverName: TDriverName);
 begin
-  FDriverConnection  := TDriverZeos.Create(AConnection, ADriverName);
   FDriverTransaction := TDriverZeosTransaction.Create(AConnection);
+  FDriverConnection  := TDriverZeos.Create(AConnection,
+                                           FDriverTransaction,
+                                           ADriverName,
+                                           FCommandMonitor,
+                                           FMonitorCallback);
   FAutoTransaction := False;
 end;
 
-constructor TFactoryZeos.Create(const AConnection: TComponent;
+constructor TFactoryZeos.Create(const AConnection: TZConnection;
   const ADriverName: TDriverName; const AMonitor: ICommandMonitor);
 begin
   Create(AConnection, ADriverName);
   FCommandMonitor := AMonitor;
 end;
 
-constructor TFactoryZeos.Create(const AConnection: TComponent;
+procedure TFactoryZeos.AddTransaction(const AKey: String;
+  const ATransaction: TComponent);
+begin
+  if not (ATransaction is TZConnection) then
+    raise Exception.Create('Invalid transaction type. Expected TZConnection.');
+
+  inherited AddTransaction(AKey, ATransaction);
+end;
+
+constructor TFactoryZeos.Create(const AConnection: TZConnection;
   const ADriverName: TDriverName; const AMonitorCallback: TMonitorProc);
 begin
   Create(AConnection, ADriverName);
   FMonitorCallback := AMonitorCallback;
 end;
 
-function TFactoryZeos.CreateQuery: IDBQuery;
-begin
-  Result := FDriverConnection.CreateQuery;
-end;
-
-function TFactoryZeos.CreateResultSet(const ASQL: String): IDBResultSet;
-begin
-  Result := FDriverConnection.CreateResultSet(ASQL);
-end;
-
 destructor TFactoryZeos.Destroy;
 begin
-  FDriverTransaction.Free;
   FDriverConnection.Free;
-  inherited;
-end;
-
-procedure TFactoryZeos.Disconnect;
-begin
-  if IsConnected then
-    FDriverConnection.Disconnect;
-end;
-
-procedure TFactoryZeos.ExecuteDirect(const ASQL: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryZeos.ExecuteDirect(const ASQL: string; const AParams: TParams);
-begin
-  inherited;
-end;
-
-procedure TFactoryZeos.ExecuteScript(const AScript: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryZeos.ExecuteScripts;
-begin
-  inherited;
-end;
-
-function TFactoryZeos.GetDriverName: TDriverName;
-begin
-  Result := FDriverConnection.DriverName;
-end;
-
-function TFactoryZeos.IsConnected: Boolean;
-begin
-  Result := FDriverConnection.IsConnected;
-end;
-
-function TFactoryZeos.InTransaction: Boolean;
-begin
-  Result := FDriverTransaction.InTransaction;
-end;
-
-procedure TFactoryZeos.StartTransaction;
-begin
-  inherited;
-  FDriverTransaction.StartTransaction;
-end;
-
-procedure TFactoryZeos.AddScript(const AScript: string);
-begin
-  FDriverConnection.AddScript(AScript);
-end;
-
-procedure TFactoryZeos.Commit;
-begin
-  FDriverTransaction.Commit;
-  inherited;
-end;
-
-procedure TFactoryZeos.Rollback;
-begin
-  FDriverTransaction.Rollback;
+  FDriverTransaction.Free;
   inherited;
 end;
 

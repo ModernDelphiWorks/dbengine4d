@@ -30,35 +30,25 @@ uses
   DB,
   Classes,
   SysUtils,
+  nxdb,
+  // DBEBr
   dbebr.factory.connection,
   dbebr.factory.interfaces;
 
 type
-  // Fábrica de conexão concreta com ElevateDB
+  // Fábrica de conexão concreta com NexusDB
   TFactoryNexusDB = class(TFactoryConnection)
   public
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TnxDatabase;
       const ADriverName: TDriverName); overload;
-    constructor Create(const AConnection: TComponent;
+    constructor Create(const AConnection: TnxDatabase;
+      const ADriverName: TDriverName;
+      const AMonitor: ICommandMonitor); overload;
+    constructor Create(const AConnection: TnxDatabase;
       const ADriverName: TDriverName;
       const AMonitorCallback: TMonitorProc); overload;
     destructor Destroy; override;
-    procedure Connect; override;
-    procedure Disconnect; override;
-    procedure StartTransaction; override;
-    procedure Commit; override;
-    procedure Rollback; override;
-    procedure ExecuteDirect(const ASQL: string); overload; override;
-    procedure ExecuteDirect(const ASQL: string;
-      const AParams: TParams); overload; override;
-    procedure ExecuteScript(const AScript: string); override;
-    procedure AddScript(const AScript: string); override;
-    procedure ExecuteScripts; override;
-    function InTransaction: Boolean; override;
-    function IsConnected: Boolean; override;
-    function GetDriverName: TDriverName; override;
-    function CreateQuery: IDBQuery; override;
-    function CreateResultSet(const ASQL: String): IDBResultSet; override;
+    procedure AddTransaction(const AKey: String; const ATransaction: TComponent); override;
   end;
 
 implementation
@@ -69,109 +59,45 @@ uses
 
 { TFactoryNexusDB }
 
-procedure TFactoryNexusDB.Connect;
-begin
-  if not IsConnected then
-    FDriverConnection.Connect;
-end;
-
-constructor TFactoryNexusDB.Create(const AConnection: TComponent;
+constructor TFactoryNexusDB.Create(const AConnection: TnxDatabase;
   const ADriverName: TDriverName);
 begin
-  inherited;
-  FDriverConnection  := TDriverNexusDB.Create(AConnection, ADriverName);
   FDriverTransaction := TDriverNexusDBTransaction.Create(AConnection);
+  FDriverConnection  := TDriverNexusDB.Create(AConnection,
+                                              FDriverTransaction,
+                                              ADriverName,
+                                              FCommandMonitor,
+                                              FMonitorCallback);
+  FAutoTransaction := False;
 end;
 
-constructor TFactoryNexusDB.Create(const AConnection: TComponent;
+constructor TFactoryNexusDB.Create(const AConnection: TnxDatabase;
+  const ADriverName: TDriverName; const AMonitor: ICommandMonitor);
+begin
+  Create(AConnection, ADriverName);
+  FCommandMonitor := AMonitor;
+end;
+
+procedure TFactoryNexusDB.AddTransaction(const AKey: String;
+  const ATransaction: TComponent);
+begin
+  if not (ATransaction is TnxDatabase) then
+    raise Exception.Create('Invalid transaction type. Expected TnxDatabase.');
+
+  inherited AddTransaction(AKey, ATransaction);
+end;
+
+constructor TFactoryNexusDB.Create(const AConnection: TUniConnection;
   const ADriverName: TDriverName; const AMonitorCallback: TMonitorProc);
 begin
   Create(AConnection, ADriverName);
   FMonitorCallback := AMonitorCallback;
 end;
 
-function TFactoryNexusDB.CreateQuery: IDBQuery;
-begin
-  Result := FDriverConnection.CreateQuery;
-end;
-
-function TFactoryNexusDB.CreateResultSet(const ASQL: String): IDBResultSet;
-begin
-  Result := FDriverConnection.CreateResultSet(ASQL);
-end;
-
 destructor TFactoryNexusDB.Destroy;
 begin
-  FDriverTransaction.Free;
   FDriverConnection.Free;
-  inherited;
-end;
-
-procedure TFactoryNexusDB.Disconnect;
-begin
-  inherited;
-  if IsConnected then
-    FDriverConnection.Disconnect;
-end;
-
-procedure TFactoryNexusDB.ExecuteDirect(const ASQL: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryNexusDB.ExecuteDirect(const ASQL: string; const AParams: TParams);
-begin
-  inherited;
-end;
-
-procedure TFactoryNexusDB.ExecuteScript(const AScript: string);
-begin
-  inherited;
-end;
-
-procedure TFactoryNexusDB.ExecuteScripts;
-begin
-  inherited;
-end;
-
-function TFactoryNexusDB.GetDriverName: TDriverName;
-begin
-  inherited;
-  Result := FDriverConnection.DriverName;
-end;
-
-function TFactoryNexusDB.IsConnected: Boolean;
-begin
-  inherited;
-  Result := FDriverConnection.IsConnected;
-end;
-
-function TFactoryNexusDB.InTransaction: Boolean;
-begin
-  Result := FDriverTransaction.InTransaction;
-end;
-
-procedure TFactoryNexusDB.StartTransaction;
-begin
-  inherited;
-  FDriverTransaction.StartTransaction;
-end;
-
-procedure TFactoryNexusDB.AddScript(const AScript: string);
-begin
-  inherited;
-  FDriverConnection.AddScript(AScript);
-end;
-
-procedure TFactoryNexusDB.Commit;
-begin
-  FDriverTransaction.Commit;
-  inherited;
-end;
-
-procedure TFactoryNexusDB.Rollback;
-begin
-  FDriverTransaction.Rollback;
+  FDriverTransaction.Free;
   inherited;
 end;
 
