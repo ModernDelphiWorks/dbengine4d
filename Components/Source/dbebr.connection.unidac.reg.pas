@@ -1,4 +1,4 @@
-unit dbebr.connection.unidac.reg;
+unit dbe.connection.unidac.reg;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.unidac;
+  dbe.connection.unidac;
 
 procedure register;
 
@@ -14,7 +14,7 @@ implementation
 
 procedure register;
 begin
-  RegisterComponents('DBEBr', [TDBEBrConnectionUniDAC]);
+  RegisterComponents('DBE', [TDBEConnectionUniDAC]);
 end;
 
 end.

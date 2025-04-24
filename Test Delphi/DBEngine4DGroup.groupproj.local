@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2019/03/11 15:49:18.000.425,D:\ORMBr\Test\TestsGroup.groupproj=C:\Users\isaque.pinheiro\Documents\Embarcadero\Studio\Projects\ProjectGroup1.groupproj</Transaction>
+    <Transaction>2025/04/12 08:45:12.000.629,D:\PROJETOS-Brasil\DBEngine4D\Test Delphi\DBEngineGroup.groupproj=D:\PROJETOS-Brasil\DBEngine4D\Test Delphi\TestsGroup.groupproj</Transaction>
+    <Transaction>2025/04/12 08:45:36.000.908,D:\PROJETOS-Brasil\DBEngine4D\Test Delphi\DBEngineGroup.groupproj=D:\PROJETOS-Brasil\DBEngine4D\Test Delphi\DBEngine4DGroup.groupproj</Transaction>
+  </Transactions>
+	<Default.Personality>
+		<Projects ActiveProject="D:\PROJETOS-Brasil\DBEngine4D\Test Delphi\TestsFireDAC.dproj"/>
+	</Default.Personality>
+</BorlandProject>

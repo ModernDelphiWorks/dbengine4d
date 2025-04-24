@@ -1,4 +1,4 @@
-unit dbebr.connection.fibplus;
+unit dbe.connection.fibplus;
 
 interface
 
@@ -8,9 +8,9 @@ uses
   FIBQuery,
   FIBDataSet,
   FIBDatabase,
-  dbebr.connection.base,
-  dbebr.factory.fibplus,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  dbe.factory.fibplus,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -24,7 +24,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionFIBPlus = class(TDBEBrConnectionBase)
+  TDBEConnectionFIBPlus = class(TDBEConnectionBase)
   private
     FConnection: TFIBDatabase;
     procedure SetConnection(const Value: TFIBDatabase);
@@ -38,25 +38,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionFIBPlus }
+{ TDBEConnectionFIBPlus }
 
-constructor TDBEBrConnectionFIBPlus.Create(AOwner: TComponent);
+constructor TDBEConnectionFIBPlus.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionFIBPlus.Destroy;
+destructor TDBEConnectionFIBPlus.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionFIBPlus.GetConnection: TFIBDatabase;
+function TDBEConnectionFIBPlus.GetConnection: TFIBDatabase;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionFIBPlus.SetConnection(const Value: TFIBDatabase);
+procedure TDBEConnectionFIBPlus.SetConnection(const Value: TFIBDatabase);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

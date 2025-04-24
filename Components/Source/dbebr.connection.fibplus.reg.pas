@@ -1,4 +1,4 @@
-unit dbebr.connection.fibplus.reg;
+unit dbe.connection.fibplus.reg;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.fibplus;
+  dbe.connection.fibplus;
 
 procedure register;
 
@@ -14,7 +14,7 @@ implementation
 
 procedure register;
 begin
-  RegisterComponents('DBEBr', [TDBEBrConnectionFIBPlus]);
+  RegisterComponents('DBE', [TDBEConnectionFIBPlus]);
 end;
 
 end.

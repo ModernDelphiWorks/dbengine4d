@@ -25,7 +25,7 @@
   @abstract(Telagram : https://t.me/ormbr)
 }
 
-unit dbebr.connection.base;
+unit dbe.connection.base;
 
 interface
 
@@ -33,9 +33,9 @@ uses
   DB,
   SysUtils,
   Classes,
-  dbebr.driver.connection,
-  dbebr.factory.connection,
-  dbebr.factory.interfaces;
+  DBE.DriverConnection,
+  DBE.FactoryConnection,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -49,7 +49,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionBase = class(TComponent)
+  TDBEConnectionBase = class(TComponent)
   protected
     FDBConnection: IDBConnection;
     FDriverName: TDriverName;
@@ -71,7 +71,7 @@ type
     function InTransaction: Boolean;
     function IsConnected: Boolean;
     function CreateQuery: IDBQuery;
-    function CreateResultSet(const ASQL: String): IDBResultSet;
+    function CreateDataSet(const ASQL: String): IDBResultSet;
     function CommandMonitor: ICommandMonitor;
     function DBConnection: IDBConnection;
   published
@@ -80,109 +80,109 @@ type
 
 implementation
 
-{ TDBEBrConnectionBase }
+{ TDBEConnectionBase }
 
-constructor TDBEBrConnectionBase.Create(AOwner: TComponent);
+constructor TDBEConnectionBase.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionBase.Destroy;
+destructor TDBEConnectionBase.Destroy;
 begin
 
   inherited;
 end;
 
-procedure TDBEBrConnectionBase.AddScript(const AScript: String);
+procedure TDBEConnectionBase.AddScript(const AScript: String);
 begin
   GetDBConnection.AddScript(AScript);
 end;
 
-function TDBEBrConnectionBase.CommandMonitor: ICommandMonitor;
+function TDBEConnectionBase.CommandMonitor: ICommandMonitor;
 begin
   Result := GetDBConnection.CommandMonitor;
 end;
 
-procedure TDBEBrConnectionBase.Commit;
+procedure TDBEConnectionBase.Commit;
 begin
   GetDBConnection.Commit;
 end;
 
-procedure TDBEBrConnectionBase.Connect;
+procedure TDBEConnectionBase.Connect;
 begin
   GetDBConnection.Connect;
 end;
 
-function TDBEBrConnectionBase.DBConnection: IDBConnection;
+function TDBEConnectionBase.DBConnection: IDBConnection;
 begin
   Result := GetDBConnection;
 end;
 
-function TDBEBrConnectionBase.CreateQuery: IDBQuery;
+function TDBEConnectionBase.CreateQuery: IDBQuery;
 begin
   Result := GetDBConnection.CreateQuery;
 end;
 
-function TDBEBrConnectionBase.CreateResultSet(
+function TDBEConnectionBase.CreateDataSet(
   const ASQL: String): IDBResultSet;
 begin
-  Result := GetDBConnection.CreateResultSet(ASQL);
+  Result := GetDBConnection.CreateDataSet(ASQL);
 end;
 
-procedure TDBEBrConnectionBase.Disconnect;
+procedure TDBEConnectionBase.Disconnect;
 begin
   GetDBConnection.Disconnect;
 end;
 
-procedure TDBEBrConnectionBase.ExecuteDirect(const ASQL: String);
+procedure TDBEConnectionBase.ExecuteDirect(const ASQL: String);
 begin
   GetDBConnection.ExecuteDirect(ASQL);
 end;
 
-procedure TDBEBrConnectionBase.ExecuteDirect(const ASQL: String;
+procedure TDBEConnectionBase.ExecuteDirect(const ASQL: String;
   const AParams: TParams);
 begin
   GetDBConnection.ExecuteDirect(ASQL, AParams);
 end;
 
-procedure TDBEBrConnectionBase.ExecuteScript(const AScript: String);
+procedure TDBEConnectionBase.ExecuteScript(const AScript: String);
 begin
   GetDBConnection.ExecuteScript(AScript);
 end;
 
-procedure TDBEBrConnectionBase.ExecuteScripts;
+procedure TDBEConnectionBase.ExecuteScripts;
 begin
   GetDBConnection.ExecuteScripts;
 end;
 
-function TDBEBrConnectionBase.GetDBConnection: IDBConnection;
+function TDBEConnectionBase.GetDBConnection: IDBConnection;
 begin
 //  if FDBConnection = nil then
 //    raise Exception.Create('Connection property not set!');
   Result := FDBConnection;
 end;
 
-function TDBEBrConnectionBase.InTransaction: Boolean;
+function TDBEConnectionBase.InTransaction: Boolean;
 begin
   Result := GetDBConnection.InTransaction;
 end;
 
-function TDBEBrConnectionBase.IsConnected: Boolean;
+function TDBEConnectionBase.IsConnected: Boolean;
 begin
   Result := GetDBConnection.IsConnected;
 end;
 
-procedure TDBEBrConnectionBase.Rollback;
+procedure TDBEConnectionBase.Rollback;
 begin
   GetDBConnection.Rollback;
 end;
 
-procedure TDBEBrConnectionBase.SetCommandMonitor(AMonitor: ICommandMonitor);
+procedure TDBEConnectionBase.SetCommandMonitor(AMonitor: ICommandMonitor);
 begin
   GetDBConnection.SetCommandMonitor(AMonitor);
 end;
 
-procedure TDBEBrConnectionBase.StartTransaction;
+procedure TDBEConnectionBase.StartTransaction;
 begin
   GetDBConnection.StartTransaction;
 end;

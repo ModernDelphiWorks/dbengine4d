@@ -1,4 +1,4 @@
-unit dbebr.connection.sqldirect.reg;
+unit dbe.connection.sqldirect.reg;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.sqldirect;
+  dbe.connection.sqldirect;
 
 procedure register;
 
@@ -14,7 +14,7 @@ implementation
 
 procedure register;
 begin
-  RegisterComponents('DBEBr', [TDBEBrConnectionSQLDirect]);
+  RegisterComponents('DBE', [TDBEConnectionSQLDirect]);
 end;
 
 end.

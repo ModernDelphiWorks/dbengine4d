@@ -15,12 +15,15 @@ uses
   DUnitX.TestFramework,
   Tests.Driver.FireDAC in 'Tests.Driver.FireDAC.pas',
   Tests.Consts in 'Tests.Consts.pas',
-  dbebr.driver.connection in '..\Source\Core\dbebr.driver.connection.pas',
-  dbebr.factory.connection in '..\Source\Core\dbebr.factory.connection.pas',
-  dbebr.factory.interfaces in '..\Source\Core\dbebr.factory.interfaces.pas',
-  dbebr.driver.firedac in '..\Source\Drivers\dbebr.driver.firedac.pas',
-  dbebr.driver.firedac.transaction in '..\Source\Drivers\dbebr.driver.firedac.transaction.pas',
-  dbebr.factory.firedac in '..\Source\Drivers\dbebr.factory.firedac.pas';
+  DBEngine.DriverFireDac in '..\Source\Drivers\DBEngine.DriverFireDac.pas',
+  DBEngine.DriverFireDacTransaction in '..\Source\Drivers\DBEngine.DriverFireDacTransaction.pas',
+  DBEngine.FactoryFireDac in '..\Source\Drivers\DBEngine.FactoryFireDac.pas',
+  DBEngine.Consts in '..\Source\Core\DBEngine.Consts.pas',
+  DBEngine.DriverConnection in '..\Source\Core\DBEngine.DriverConnection.pas',
+  DBEngine.FactoryConnection in '..\Source\Core\DBEngine.FactoryConnection.pas',
+  DBEngine.FactoryInterfaces in '..\Source\Core\DBEngine.FactoryInterfaces.pas',
+  DBEngine.GuardConnection in '..\Source\Core\DBEngine.GuardConnection.pas',
+  DBEngine.PoolConnection in '..\Source\Core\DBEngine.PoolConnection.pas';
 
 {$IFNDEF TESTINSIGHT}
 var

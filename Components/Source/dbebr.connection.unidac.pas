@@ -1,4 +1,4 @@
-unit dbebr.connection.unidac;
+unit dbe.connection.unidac;
 
 interface
 
@@ -6,9 +6,9 @@ uses
   DB,
   Classes,
   Uni,
-  dbebr.connection.base,
-  dbebr.factory.unidac,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  dbe.factory.unidac,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -22,7 +22,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionUniDAC = class(TDBEBrConnectionBase)
+  TDBEConnectionUniDAC = class(TDBEConnectionBase)
   private
     FConnection: TUniConnection;
     procedure SetConnection(const Value: TUniConnection);
@@ -36,25 +36,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionUniDAC }
+{ TDBEConnectionUniDAC }
 
-constructor TDBEBrConnectionUniDAC.Create(AOwner: TComponent);
+constructor TDBEConnectionUniDAC.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionUniDAC.Destroy;
+destructor TDBEConnectionUniDAC.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionUniDAC.GetConnection: TUniConnection;
+function TDBEConnectionUniDAC.GetConnection: TUniConnection;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionUniDAC.SetConnection(const Value: TUniConnection);
+procedure TDBEConnectionUniDAC.SetConnection(const Value: TUniConnection);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

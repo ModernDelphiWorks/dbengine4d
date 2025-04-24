@@ -1,4 +1,4 @@
-unit dbebr.connection.sqldirect;
+unit dbe.connection.sqldirect;
 
 interface
 
@@ -6,9 +6,9 @@ uses
   DB,
   Classes,
   SDEngine,
-  dbebr.connection.base,
-  dbebr.factory.sqldirect,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  dbe.factory.sqldirect,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -22,7 +22,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionSQLDirect = class(TDBEBrConnectionBase)
+  TDBEConnectionSQLDirect = class(TDBEConnectionBase)
   private
     FConnection: TSDDatabase;
     procedure SetConnection(const Value: TSDDatabase);
@@ -36,25 +36,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionSQLDirect }
+{ TDBEConnectionSQLDirect }
 
-constructor TDBEBrConnectionSQLDirect.Create(AOwner: TComponent);
+constructor TDBEConnectionSQLDirect.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionSQLDirect.Destroy;
+destructor TDBEConnectionSQLDirect.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionSQLDirect.GetConnection: TSDDatabase;
+function TDBEConnectionSQLDirect.GetConnection: TSDDatabase;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionSQLDirect.SetConnection(const Value: TSDDatabase);
+procedure TDBEConnectionSQLDirect.SetConnection(const Value: TSDDatabase);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

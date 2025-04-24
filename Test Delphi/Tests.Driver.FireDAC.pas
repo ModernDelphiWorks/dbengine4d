@@ -28,7 +28,7 @@ uses
   FireDAC.DApt.Intf,
   FireDAC.Comp.DataSet,
 
-  dbebr.factory.interfaces;
+  DBEngine.FactoryInterfaces;
 
 type
   [TestFixture]
@@ -37,7 +37,7 @@ type
     FConnection: TFDConnection;
     FDBConnection: IDBConnection;
     FDBQuery: IDBQuery;
-    FDBResultSet: IDBResultSet;
+    FDBResultSet: IDBDataSet;
   public
     [Setup]
     procedure Setup;
@@ -64,7 +64,7 @@ type
     [Test]
     procedure TestCreateQuery;
     [Test]
-    procedure TestCreateResultSet;
+    procedure TestCreateDataSet;
     [Test]
     procedure TestStartTransaction;
     [Test]
@@ -76,7 +76,7 @@ type
 implementation
 
 uses
-  dbebr.factory.firedac,
+  DBEngine.FactoryFireDac,
   Tests.Consts;
 
 { TTestDriverConnection }
@@ -143,7 +143,7 @@ begin
     end;
     FDBConnection.ExecuteDirect(cSQLUPDATEPARAM, LParams);
 
-    FDBResultSet := FDBConnection.CreateResultSet(Format(cSQLSELECT, ['1']));
+    FDBResultSet := FDBConnection.CreateDataSet(Format(cSQLSELECT, ['1']));
     LValue := FDBResultSet.FieldByName('CLIENT_NAME').AsString;
 
     Assert.AreEqual(LValue, cDESCRIPTION + LRandon, LValue + ' <> ' + cDESCRIPTION + LRandon);
@@ -195,7 +195,7 @@ end;
 procedure TTestDriverConnection.TearDown;
 begin
   if Assigned(FConnection) then
-    FreeAndNil(FConnection);
+    FConnection.Free;
 end;
 
 procedure TTestDriverConnection.TestAddScript;
@@ -226,9 +226,9 @@ begin
   Assert.AreEqual(LValue, cDESCRIPTION + LRandon, LValue + ' <> ' + cDESCRIPTION + LRandon);
 end;
 
-procedure TTestDriverConnection.TestCreateResultSet;
+procedure TTestDriverConnection.TestCreateDataSet;
 begin
-  FDBResultSet := FDBConnection.CreateResultSet(Format(cSQLSELECT, ['1']));
+  FDBResultSet := FDBConnection.CreateDataSet(Format(cSQLSELECT, ['1']));
 
   Assert.IsTrue(FDBResultSet.RecordCount = 1, 'FDBResultSet.RecordCount = ' + IntToStr(FDBResultSet.RecordCount));
 end;
@@ -242,3 +242,5 @@ end;
 initialization
   TDUnitX.RegisterTestFixture(TTestDriverConnection);
 end.
+
+

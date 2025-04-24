@@ -1,4 +1,4 @@
-unit dbebr.connection.nexusdb.reg;
+unit dbe.connection.nexusdb.reg;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.nexusdb;
+  dbe.connection.nexusdb;
 
 procedure register;
 
@@ -14,7 +14,7 @@ implementation
 
 procedure register;
 begin
-  RegisterComponents('DBEBr', [TDBEBrConnectionNexusDB]);
+  RegisterComponents('DBE', [TDBEConnectionNexusDB]);
 end;
 
 end.

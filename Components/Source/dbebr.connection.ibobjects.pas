@@ -1,4 +1,4 @@
-unit dbebr.connection.ibobjects;
+unit dbe.connection.ibobjects;
 
 interface
 
@@ -8,9 +8,9 @@ uses
   IB_Components,
   IBODataset,
   IB_Access,
-  dbebr.connection.base,
-  dbebr.factory.ibobjects,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  dbe.factory.ibobjects,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -24,7 +24,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionIBObjects = class(TDBEBrConnectionBase)
+  TDBEConnectionIBObjects = class(TDBEConnectionBase)
   private
     FConnection: TIBODatabase;
     procedure SetConnection(const Value: TIBODatabase);
@@ -38,25 +38,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionIBObjects }
+{ TDBEConnectionIBObjects }
 
-constructor TDBEBrConnectionIBObjects.Create(AOwner: TComponent);
+constructor TDBEConnectionIBObjects.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionIBObjects.Destroy;
+destructor TDBEConnectionIBObjects.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionIBObjects.GetConnection: TIBODatabase;
+function TDBEConnectionIBObjects.GetConnection: TIBODatabase;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionIBObjects.SetConnection(const Value: TIBODatabase);
+procedure TDBEConnectionIBObjects.SetConnection(const Value: TIBODatabase);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

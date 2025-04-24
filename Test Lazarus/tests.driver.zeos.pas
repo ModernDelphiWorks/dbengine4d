@@ -9,13 +9,13 @@ uses
   Classes, SysUtils, fpcunit, testutils, testregistry,
 
   ZConnection,
-  dbebr.factory.interfaces;
+  DBE.FactoryInterfaces;
 
 type
 
-  { TTestDBEBrZeos }
+  { TTestDBEZeos }
 
-  TTestDBEBrZeos= class(TTestCase)
+  TTestDBEZeos= class(TTestCase)
   strict private
     FConnection: TZConnection;
     FDBConnection: IDBConnection;
@@ -35,7 +35,7 @@ type
     procedure TestIsConnected;
     procedure TestInTransaction;
     procedure TestCreateQuery;
-    procedure TestCreateResultSet;
+    procedure TestCreateDataSet;
     procedure TestStartTransaction;
     procedure TestCommit;
     procedure TestRollback;
@@ -44,22 +44,22 @@ type
 implementation
 
 uses
-  dbebr.factory.zeos,
+  dbe.factory.zeos,
   Tests.Consts;
 
-procedure TTestDBEBrZeos.TestConnect;
+procedure TTestDBEZeos.TestConnect;
 begin
   FDBConnection.Connect;
   AssertEquals('FConnection.IsConnected = True', True, FDBConnection.IsConnected);
 end;
 
-procedure TTestDBEBrZeos.TestDisconnect;
+procedure TTestDBEZeos.TestDisconnect;
 begin
   FDBConnection.Disconnect;
   AssertEquals('FConnection.IsConnected = False', False, FDBConnection.IsConnected);
 end;
 
-procedure TTestDBEBrZeos.TestExecuteDirect;
+procedure TTestDBEZeos.TestExecuteDirect;
 var
   LValue: String;
   LRandon: String;
@@ -75,7 +75,7 @@ begin
   AssertEquals(LValue + ' <> ' + cDESCRIPTION + LRandon, LValue, cDESCRIPTION + LRandon);
 end;
 
-procedure TTestDBEBrZeos.TestExecuteDirectParams;
+procedure TTestDBEZeos.TestExecuteDirectParams;
 var
   LParams: TParams;
   LRandon: String;
@@ -101,7 +101,7 @@ begin
     end;
     FDBConnection.ExecuteDirect(cSQLUPDATEPARAM, LParams);
 
-    FDBResultSet := FDBConnection.CreateResultSet(Format(cSQLSELECT, ['1']));
+    FDBResultSet := FDBConnection.CreateDataSet(Format(cSQLSELECT, ['1']));
     LValue := FDBResultSet.FieldByName('CLIENT_NAME').AsString;
 
     AssertEquals(LValue + ' <> ' + cDESCRIPTION + LRandon, LValue, cDESCRIPTION + LRandon);
@@ -110,27 +110,27 @@ begin
   end;
 end;
 
-procedure TTestDBEBrZeos.TestExecuteScript;
+procedure TTestDBEZeos.TestExecuteScript;
 begin
 
 end;
 
-procedure TTestDBEBrZeos.TestAddScript;
+procedure TTestDBEZeos.TestAddScript;
 begin
 
 end;
 
-procedure TTestDBEBrZeos.TestExecuteScripts;
+procedure TTestDBEZeos.TestExecuteScripts;
 begin
 
 end;
 
-procedure TTestDBEBrZeos.TestIsConnected;
+procedure TTestDBEZeos.TestIsConnected;
 begin
   AssertEquals('FConnection.IsConnected = False', False, FDBConnection.IsConnected);
 end;
 
-procedure TTestDBEBrZeos.TestInTransaction;
+procedure TTestDBEZeos.TestInTransaction;
 begin
   FDBConnection.Connect;
   FDBConnection.StartTransaction;
@@ -141,7 +141,7 @@ begin
   FDBConnection.Disconnect;
 end;
 
-procedure TTestDBEBrZeos.TestCreateQuery;
+procedure TTestDBEZeos.TestCreateQuery;
 var
   LValue: String;
   LRandon: String;
@@ -158,20 +158,20 @@ begin
   AssertEquals(LValue + ' <> ' + cDESCRIPTION + LRandon, LValue, cDESCRIPTION + LRandon);
 end;
 
-procedure TTestDBEBrZeos.TestCreateResultSet;
+procedure TTestDBEZeos.TestCreateDataSet;
 begin
-  FDBResultSet := FDBConnection.CreateResultSet(Format(cSQLSELECT, ['1']));
+  FDBResultSet := FDBConnection.CreateDataSet(Format(cSQLSELECT, ['1']));
 
   AssertEquals('FDBResultSet.RecordCount = ' + IntToStr(FDBResultSet.RecordCount), 1, FDBResultSet.RecordCount);
 end;
 
-procedure TTestDBEBrZeos.TestStartTransaction;
+procedure TTestDBEZeos.TestStartTransaction;
 begin
   FDBConnection.StartTransaction;
   AssertEquals('FConnection.InTransaction = True', True, FDBConnection.InTransaction);
 end;
 
-procedure TTestDBEBrZeos.TestCommit;
+procedure TTestDBEZeos.TestCommit;
 begin
   TestStartTransaction;
 
@@ -179,7 +179,7 @@ begin
   AssertEquals('FConnection.InTransaction = False', False, FDBConnection.InTransaction);
 end;
 
-procedure TTestDBEBrZeos.TestRollback;
+procedure TTestDBEZeos.TestRollback;
 begin
   TestStartTransaction;
 
@@ -187,7 +187,7 @@ begin
   AssertEquals('FConnection.InTransaction = False', False, FDBConnection.InTransaction);
 end;
 
-procedure TTestDBEBrZeos.SetUp;
+procedure TTestDBEZeos.SetUp;
 begin
   FConnection := TZConnection.Create(nil);
   FConnection.LoginPrompt := False;
@@ -197,14 +197,14 @@ begin
   FDBConnection := TFactoryUniDAC.Create(FConnection, dnSQLite);
 end;
 
-procedure TTestDBEBrZeos.TearDown;
+procedure TTestDBEZeos.TearDown;
 begin
   if Assigned(FConnection) then
     FreeAndNil(FConnection);
 end;
 
 initialization
-  RegisterTest(TTestDBEBrZeos);
+  RegisterTest(TTestDBEZeos);
 
 end.
 

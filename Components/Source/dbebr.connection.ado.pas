@@ -1,4 +1,4 @@
-unit dbebr.connection.ado;
+unit dbe.connection.ado;
 
 interface
 
@@ -6,9 +6,9 @@ uses
   DB,
   Classes,
   ADODB,
-  dbebr.connection.base,
-  dbebr.factory.ado,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  DBE.FactoryADO,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -22,7 +22,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionADO = class(TDBEBrConnectionBase)
+  TDBEConnectionADO = class(TDBEConnectionBase)
   private
     FConnection: TADOConnection;
     procedure SetConnection(const Value: TADOConnection);
@@ -36,25 +36,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionADO }
+{ TDBEConnectionADO }
 
-constructor TDBEBrConnectionADO.Create(AOwner: TComponent);
+constructor TDBEConnectionADO.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionADO.Destroy;
+destructor TDBEConnectionADO.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionADO.GetConnection: TADOConnection;
+function TDBEConnectionADO.GetConnection: TADOConnection;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionADO.SetConnection(const Value: TADOConnection);
+procedure TDBEConnectionADO.SetConnection(const Value: TADOConnection);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

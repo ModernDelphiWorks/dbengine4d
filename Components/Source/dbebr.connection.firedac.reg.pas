@@ -1,4 +1,4 @@
-unit dbebr.connection.firedac.reg;
+unit dbe.connection.firedac.reg;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.firedac;
+  dbe.connection.firedac;
 
 procedure register;
 
@@ -14,7 +14,7 @@ implementation
 
 procedure register;
 begin
-  RegisterComponents('DBEBr', [TDBEBrConnectionFireDAC]);
+  RegisterComponents('DBE', [TDBEConnectionFireDAC]);
 end;
 
 end.

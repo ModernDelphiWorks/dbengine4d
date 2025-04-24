@@ -15,14 +15,13 @@ uses
   DUnitX.TestFramework,
   Tests.Driver.SQLite in 'Tests.Driver.SQLite.pas',
   Tests.Consts in 'Tests.Consts.pas',
-  dbebr.driver.connection in '..\Source\Core\dbebr.driver.connection.pas',
-  dbebr.factory.connection in '..\Source\Core\dbebr.factory.connection.pas',
-  dbebr.factory.interfaces in '..\Source\Core\dbebr.factory.interfaces.pas',
-  dbebr.driver.sqlite3 in '..\Source\Drivers\dbebr.driver.sqlite3.pas',
-  dbebr.driver.sqlite3.transaction in '..\Source\Drivers\dbebr.driver.sqlite3.transaction.pas',
-  dbebr.factory.sqlite3 in '..\Source\Drivers\dbebr.factory.sqlite3.pas';
+  dbe.driver.sqlite3 in '..\Source\Drivers\dbe.driver.sqlite3.pas',
+  dbe.driver.sqlite3.transaction in '..\Source\Drivers\dbe.driver.sqlite3.transaction.pas',
+  dbe.factory.sqlite3 in '..\Source\Drivers\dbe.factory.sqlite3.pas',
+  DBEngine.DriverConnection in '..\Source\Core\DBEngine.DriverConnection.pas',
+  DBEngine.FactoryConnection in '..\Source\Core\DBEngine.FactoryConnection.pas',
+  DBEngine.FactoryInterfaces in '..\Source\Core\DBEngine.FactoryInterfaces.pas';
 
-{$IFNDEF TESTINSIGHT}
 var
   runner: ITestRunner;
   results: IRunResults;

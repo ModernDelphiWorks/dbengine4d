@@ -1,4 +1,4 @@
-unit dbebr.connection.dbexpress;
+unit dbe.connection.dbexpress;
 
 interface
 
@@ -6,9 +6,9 @@ uses
   DB,
   SqlExpr,
   Classes,
-  dbebr.connection.base,
-  dbebr.factory.dbexpress,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  dbe.factory.dbexpress,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -22,7 +22,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionDBExpress = class(TDBEBrConnectionBase)
+  TDBEConnectionDBExpress = class(TDBEConnectionBase)
   private
     FConnection: TSQLConnection;
     procedure SetConnection(const Value: TSQLConnection);
@@ -36,25 +36,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionDBExpress }
+{ TDBEConnectionDBExpress }
 
-constructor TDBEBrConnectionDBExpress.Create(AOwner: TComponent);
+constructor TDBEConnectionDBExpress.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionDBExpress.Destroy;
+destructor TDBEConnectionDBExpress.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionDBExpress.GetConnection: TSQLConnection;
+function TDBEConnectionDBExpress.GetConnection: TSQLConnection;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionDBExpress.SetConnection(const Value: TSQLConnection);
+procedure TDBEConnectionDBExpress.SetConnection(const Value: TSQLConnection);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

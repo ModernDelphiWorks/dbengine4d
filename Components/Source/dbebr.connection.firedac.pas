@@ -1,4 +1,4 @@
-unit dbebr.connection.firedac;
+unit dbe.connection.firedac;
 
 interface
 
@@ -6,9 +6,9 @@ uses
   DB,
   Classes,
   FireDAC.Comp.Client,
-  dbebr.connection.base,
-  dbebr.factory.firedac,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  DBE.FactoryFireDac,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -22,7 +22,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionFireDAC = class(TDBEBrConnectionBase)
+  TDBEConnectionFireDAC = class(TDBEConnectionBase)
   private
     FConnection: TFDConnection;
     procedure SetConnection(const Value: TFDConnection);
@@ -36,25 +36,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionFireDAC }
+{ TDBEConnectionFireDAC }
 
-constructor TDBEBrConnectionFireDAC.Create(AOwner: TComponent);
+constructor TDBEConnectionFireDAC.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionFireDAC.Destroy;
+destructor TDBEConnectionFireDAC.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionFireDAC.GetConnection: TFDConnection;
+function TDBEConnectionFireDAC.GetConnection: TFDConnection;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionFireDAC.SetConnection(const Value: TFDConnection);
+procedure TDBEConnectionFireDAC.SetConnection(const Value: TFDConnection);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

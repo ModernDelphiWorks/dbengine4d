@@ -1,4 +1,4 @@
-unit dbebr.connection.mongowire.reg;
+unit dbe.connection.mongowire.reg;
 
 interface
 
@@ -6,17 +6,17 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.mongowire;
+  dbe.connection.mongowire;
 
 procedure register;
 
 implementation
 
-{$R 'dbebr.connection.mongowire.res' 'dbebr.connection.mongowire.rc'}
+{$R 'dbe.connection.mongowire.res' 'dbe.connection.mongowire.rc'}
 
 procedure register;
 begin
-  RegisterComponents('DBEBr-NoSQL', [TDBEBrConnectionMongoWire]);
+  RegisterComponents('DBE-NoSQL', [TDBEConnectionMongoWire]);
 end;
 
 end.

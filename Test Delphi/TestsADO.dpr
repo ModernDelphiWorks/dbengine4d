@@ -5,7 +5,7 @@ program TestsADO;
 {$ENDIF}
 {$STRONGLINKTYPES ON}
 uses
-  FastMM5,
+  FastMM4,
   System.SysUtils,
   {$IFDEF TESTINSIGHT}
   TestInsight.DUnitX,
@@ -15,12 +15,12 @@ uses
   DUnitX.TestFramework,
   Tests.Driver.ADO in 'Tests.Driver.ADO.pas',
   Tests.Consts in 'Tests.Consts.pas',
-  dbebr.driver.connection in '..\Source\Core\dbebr.driver.connection.pas',
-  dbebr.factory.connection in '..\Source\Core\dbebr.factory.connection.pas',
-  dbebr.factory.interfaces in '..\Source\Core\dbebr.factory.interfaces.pas',
-  dbebr.driver.ado in '..\Source\Drivers\dbebr.driver.ado.pas',
-  dbebr.driver.ado.transaction in '..\Source\Drivers\dbebr.driver.ado.transaction.pas',
-  dbebr.factory.ado in '..\Source\Drivers\dbebr.factory.ado.pas';
+  DBEngine.DriverConnection in '..\Source\Core\DBEngine.DriverConnection.pas',
+  DBEngine.FactoryConnection in '..\Source\Core\DBEngine.FactoryConnection.pas',
+  DBEngine.FactoryInterfaces in '..\Source\Core\DBEngine.FactoryInterfaces.pas',
+  DBE.DriverADO in '..\Source\Drivers\DBE.DriverADO.pas',
+  DBE.DriverADOTransaction in '..\Source\Drivers\DBE.DriverADOTransaction.pas',
+  DBE.FactoryADO in '..\Source\Drivers\DBE.FactoryADO.pas';
 
 {$IFNDEF TESTINSIGHT}
 var

@@ -1,4 +1,4 @@
-unit dbebr.connection.nexusdb;
+unit dbe.connection.nexusdb;
 
 interface
 
@@ -7,9 +7,9 @@ uses
   Classes,
   nxdb,
   nxllComponent,
-  dbebr.connection.base,
-  dbebr.factory.nexusdb,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  dbe.factory.nexusdb,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -20,7 +20,7 @@ type
                                pidiOSDevice or
                                pidAndroid)]
   {$IFEND}
-  TDBEBrConnectionNexusDB = class(TDBEBrConnectionBase)
+  TDBEConnectionNexusDB = class(TDBEConnectionBase)
   private
     FConnection: TnxDatabase;
     procedure SetConnection(const Value: TnxDatabase);
@@ -34,25 +34,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionNexusDB }
+{ TDBEConnectionNexusDB }
 
-constructor TDBEBrConnectionNexusDB.Create(const AOwner: TComponent);
+constructor TDBEConnectionNexusDB.Create(const AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionNexusDB.Destroy;
+destructor TDBEConnectionNexusDB.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionNexusDB.GetConnection: TnxDatabase;
+function TDBEConnectionNexusDB.GetConnection: TnxDatabase;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionNexusDB.SetConnection(const Value: TnxDatabase);
+procedure TDBEConnectionNexusDB.SetConnection(const Value: TnxDatabase);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

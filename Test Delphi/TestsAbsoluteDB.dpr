@@ -15,14 +15,13 @@ uses
   DUnitX.TestFramework,
   Tests.Driver.AbsoluteDB in 'Tests.Driver.AbsoluteDB.pas',
   Tests.Consts in 'Tests.Consts.pas',
-  dbebr.driver.connection in '..\Source\Core\dbebr.driver.connection.pas',
-  dbebr.factory.connection in '..\Source\Core\dbebr.factory.connection.pas',
-  dbebr.factory.interfaces in '..\Source\Core\dbebr.factory.interfaces.pas',
-  dbebr.driver.absolutedb in '..\Source\Drivers\dbebr.driver.absolutedb.pas',
-  dbebr.driver.absolutedb.transaction in '..\Source\Drivers\dbebr.driver.absolutedb.transaction.pas',
-  dbebr.factory.absolutedb in '..\Source\Drivers\dbebr.factory.absolutedb.pas';
+  dbe.driver.absolutedb in '..\Source\Drivers\dbe.driver.absolutedb.pas',
+  dbe.driver.absolutedb.transaction in '..\Source\Drivers\dbe.driver.absolutedb.transaction.pas',
+  dbe.factory.absolutedb in '..\Source\Drivers\dbe.factory.absolutedb.pas',
+  DBEngine.DriverConnection in '..\Source\Core\DBEngine.DriverConnection.pas',
+  DBEngine.FactoryConnection in '..\Source\Core\DBEngine.FactoryConnection.pas',
+  DBEngine.FactoryInterfaces in '..\Source\Core\DBEngine.FactoryInterfaces.pas';
 
-{$IFNDEF TESTINSIGHT}
 var
   runner: ITestRunner;
   results: IRunResults;

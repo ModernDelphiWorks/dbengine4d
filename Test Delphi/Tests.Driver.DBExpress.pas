@@ -11,7 +11,7 @@ uses
   Data.DbxSqlite,
   Datasnap.DBClient,
 
-  dbebr.factory.interfaces;
+  DBE.FactoryInterfaces;
 
 type
   [TestFixture]
@@ -47,7 +47,7 @@ type
     [Test]
     procedure TestCreateQuery;
     [Test]
-    procedure TestCreateResultSet;
+    procedure TestCreateDataSet;
     [Test]
     procedure TestStartTransaction;
     [Test]
@@ -59,7 +59,7 @@ type
 implementation
 
 uses
-  dbebr.factory.dbexpress,
+  dbe.factory.dbexpress,
   Tests.Consts;
 
 { TTestDriverConnection }
@@ -114,7 +114,7 @@ begin
     end;
     FDBConnection.ExecuteDirect(cSQLUPDATEPARAM, LParams);
 
-    FDBResultSet := FDBConnection.CreateResultSet(Format(cSQLSELECT, ['1']));
+    FDBResultSet := FDBConnection.CreateDataSet(Format(cSQLSELECT, ['1']));
     LValue := FDBResultSet.FieldByName('CLIENT_NAME').AsString;
 
     Assert.AreEqual(LValue, cDESCRIPTION + LRandon, LValue + ' <> ' + cDESCRIPTION + LRandon);
@@ -211,9 +211,9 @@ begin
   Assert.AreEqual(LValue, cDESCRIPTION + LRandon, LValue + ' <> ' + cDESCRIPTION + LRandon);
 end;
 
-procedure TTestDriverConnection.TestCreateResultSet;
+procedure TTestDriverConnection.TestCreateDataSet;
 begin
-  FDBResultSet := FDBConnection.CreateResultSet(Format(cSQLSELECT, ['1']));
+  FDBResultSet := FDBConnection.CreateDataSet(Format(cSQLSELECT, ['1']));
 
   Assert.IsTrue(FDBResultSet.RecordCount = 1, 'FDBResultSet.RecordCount = ' + IntToStr(FDBResultSet.RecordCount));
 end;

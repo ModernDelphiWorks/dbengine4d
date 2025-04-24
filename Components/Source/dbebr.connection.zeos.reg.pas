@@ -1,4 +1,4 @@
-unit dbebr.connection.zeos.reg;
+unit dbe.connection.zeos.reg;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.zeos;
+  dbe.connection.zeos;
 
 procedure register;
 
@@ -14,7 +14,7 @@ implementation
 
 procedure register;
 begin
-  RegisterComponents('DBEBr', [TDBEBrConnectionZeos]);
+  RegisterComponents('DBE', [TDBEConnectionZeos]);
 end;
 
 end.

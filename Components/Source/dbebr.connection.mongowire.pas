@@ -1,4 +1,4 @@
-unit dbebr.connection.mongowire;
+unit dbe.connection.mongowire;
 
 interface
 
@@ -10,7 +10,7 @@ uses
   mongoAuth3;
 
 type
-  TDBEBrConnectionMongoWire = class(TComponent)
+  TDBEConnectionMongoWire = class(TComponent)
   private
     FMongoWire: TMongoWire;
     FDatabase: String;
@@ -41,7 +41,7 @@ type
 
 implementation
 
-constructor TDBEBrConnectionMongoWire.Create(const AOwner: TComponent);
+constructor TDBEConnectionMongoWire.Create(const AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FDatabase := 'database';
@@ -51,23 +51,23 @@ begin
   FMongoWire := TMongoWire.Create(FDatabase);
 end;
 
-destructor TDBEBrConnectionMongoWire.Destroy;
+destructor TDBEConnectionMongoWire.Destroy;
 begin
   FMongoWire.Free;
   inherited;
 end;
 
-function TDBEBrConnectionMongoWire.GetConnected: Boolean;
+function TDBEConnectionMongoWire.GetConnected: Boolean;
 begin
   Result := FConnected;
 end;
 
-function TDBEBrConnectionMongoWire.MongoWire: TMongoWire;
+function TDBEConnectionMongoWire.MongoWire: TMongoWire;
 begin
   Result := FMongoWire;
 end;
 
-function TDBEBrConnectionMongoWire.RunCommand(ADoc: String): IJSONDocument;
+function TDBEConnectionMongoWire.RunCommand(ADoc: String): IJSONDocument;
 var
   LDoc: IJSONDocument;
 begin
@@ -75,7 +75,7 @@ begin
   Result := FMongoWire.RunCommand(LDoc);
 end;
 
-procedure TDBEBrConnectionMongoWire.SetConnected(const Value: Boolean);
+procedure TDBEConnectionMongoWire.SetConnected(const Value: Boolean);
 begin
   FConnected := Value;
   if FConnected then

@@ -1,4 +1,4 @@
-unit dbebr.connection.zeos;
+unit dbe.connection.zeos;
 
 interface
 
@@ -6,9 +6,9 @@ uses
   DB,
   Classes,
   ZConnection,
-  dbebr.connection.base,
-  dbebr.factory.zeos,
-  dbebr.factory.interfaces;
+  dbe.connection.base,
+  dbe.factory.zeos,
+  DBE.FactoryInterfaces;
 
 type
   {$IF CompilerVersion > 23}
@@ -22,7 +22,7 @@ type
                                pidLinux64 or
                                pidLinuxArm64)]
   {$IFEND}
-  TDBEBrConnectionZeos = class(TDBEBrConnectionBase)
+  TDBEConnectionZeos = class(TDBEConnectionBase)
   private
     FConnection: TZConnection;
     procedure SetConnection(const Value: TZConnection);
@@ -36,25 +36,25 @@ type
 
 implementation
 
-{ TDBEBrConnectionZeos }
+{ TDBEConnectionZeos }
 
-constructor TDBEBrConnectionZeos.Create(AOwner: TComponent);
+constructor TDBEConnectionZeos.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TDBEBrConnectionZeos.Destroy;
+destructor TDBEConnectionZeos.Destroy;
 begin
 
   inherited;
 end;
 
-function TDBEBrConnectionZeos.GetConnection: TZConnection;
+function TDBEConnectionZeos.GetConnection: TZConnection;
 begin
   Result := FConnection;
 end;
 
-procedure TDBEBrConnectionZeos.SetConnection(const Value: TZConnection);
+procedure TDBEConnectionZeos.SetConnection(const Value: TZConnection);
 begin
   FConnection := Value;
   if not Assigned(FDBConnection) then

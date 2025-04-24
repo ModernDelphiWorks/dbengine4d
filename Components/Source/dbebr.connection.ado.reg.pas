@@ -1,4 +1,4 @@
-unit dbebr.connection.ado.reg;
+unit dbe.connection.ado.reg;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.ado;
+  dbe.connection.ado;
 
 procedure register;
 
@@ -14,7 +14,7 @@ implementation
 
 procedure register;
 begin
-  RegisterComponents('DBEBr', [TDBEBrConnectionADO]);
+  RegisterComponents('DBE', [TDBEConnectionADO]);
 end;
 
 end.

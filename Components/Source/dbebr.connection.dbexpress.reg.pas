@@ -1,4 +1,4 @@
-unit dbebr.connection.dbexpress.reg;
+unit dbe.connection.dbexpress.reg;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes,
   DesignIntf,
   DesignEditors,
-  dbebr.connection.dbexpress;
+  dbe.connection.dbexpress;
 
 procedure register;
 
@@ -14,7 +14,7 @@ implementation
 
 procedure register;
 begin
-  RegisterComponents('DBEBr', [TDBEBrConnectionDBExpress]);
+  RegisterComponents('DBE', [TDBEConnectionDBExpress]);
 end;
 
 end.

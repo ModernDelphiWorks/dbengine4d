@@ -15,12 +15,12 @@ uses
   DUnitX.TestFramework,
   Tests.Driver.UniDAC in 'Tests.Driver.UniDAC.pas',
   Tests.Consts in 'Tests.Consts.pas',
-  dbebr.driver.unidac in '..\Source\Drivers\dbebr.driver.unidac.pas',
-  dbebr.driver.unidac.transaction in '..\Source\Drivers\dbebr.driver.unidac.transaction.pas',
-  dbebr.factory.unidac in '..\Source\Drivers\dbebr.factory.unidac.pas',
-  dbebr.driver.connection in '..\Source\Core\dbebr.driver.connection.pas',
-  dbebr.factory.connection in '..\Source\Core\dbebr.factory.connection.pas',
-  dbebr.factory.interfaces in '..\Source\Core\dbebr.factory.interfaces.pas';
+  dbe.driver.unidac in '..\Source\Drivers\dbe.driver.unidac.pas',
+  dbe.driver.unidac.transaction in '..\Source\Drivers\dbe.driver.unidac.transaction.pas',
+  dbe.factory.unidac in '..\Source\Drivers\dbe.factory.unidac.pas',
+  DBEngine.DriverConnection in '..\Source\Core\DBEngine.DriverConnection.pas',
+  DBEngine.FactoryConnection in '..\Source\Core\DBEngine.FactoryConnection.pas',
+  DBEngine.FactoryInterfaces in '..\Source\Core\DBEngine.FactoryInterfaces.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
