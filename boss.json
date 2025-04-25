@@ -1,8 +1,8 @@
 {
-	"name": "DBEBr",
-	"description": "DBEBr Framework for Delphi/Lazaruz",
-	"version": "1.1.7",
-	"homepage": "www.isaquepinheiro.com.br",
+	"name": "DBEngine4D",
+	"description": "Database Engine Framework for Delphi",
+	"version": "0.0.1",
+	"homepage": "https://github.com/moderndelphiworks",
 	"mainsrc": "Source/",
 	"projects": [],
 	"dependencies": {}
