@@ -875,7 +875,7 @@ end;
 
 function TDriverDataSet<T>._GetFetchingAll: Boolean;
 begin
-  raise EAbstractError.CreateFmt(ABSTRACT_METHOD_ERROR, ['_GetFetchingAll', Self.ClassName]);
+  Result := True;
 end;
 
 function TDriverDataSet<T>._GetFieldValue(const FieldName: string): Variant;
@@ -1045,7 +1045,7 @@ end;
 
 procedure TDriverDataSet<T>._SetFetchingAll(const Value: Boolean);
 begin
-  raise EAbstractError.CreateFmt(ABSTRACT_METHOD_ERROR, ['_SetFetchingAll', Self.ClassName]);
+
 end;
 
 procedure TDriverDataSet<T>._SetFieldValue(const FieldName: string; const Value: Variant);
